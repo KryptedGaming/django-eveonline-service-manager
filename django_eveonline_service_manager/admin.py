@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import *
 
-# Register your models here.
+admin.site.register(EvePayment)
+admin.site.register(EveInvoice)
+admin.site.register(EveServiceTemplate)
+admin.site.register(EveService)

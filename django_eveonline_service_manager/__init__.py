@@ -1,0 +1,1 @@
+default_app_config = "django_eveonline_service_manager.apps.DjangoEveOnlineServiceManagerConfig"

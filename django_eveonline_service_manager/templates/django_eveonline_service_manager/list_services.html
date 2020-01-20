@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block header %}
+Services
+{% endblock %}
+{% block description %}
+Request Services
+{% endblock %}
+
+{% block includes %}
+<link rel="stylesheet"
+    href="{% static 'global/ui/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+{% endblock %}
+{% block content %}
+<div class="box box-warning box-solid">
+    <div class="box-header">
+        <h3>
+            Request Services
+        </h3>
+    </div>
+    <div class="box-body">
+        <table class="datatable table table-bordered table-hover">
+            <thead>
+                <th class="col-lg-4 col-md-4 col-xs-4" scope="col">Service</th>
+                <th class="col-lg-4 col-md-4 col-xs-4" scope="col">Action</th>
+            </thead>
+            <tbody>
+                {% for service in service_templates %}
+                <tr>
+
+                    <td>
+                        <p class="pull-left">{{service.name}}</p>
+                    </td>
+                    <td>
+                        <a class="btn btn-block btn-warning" onclick="clickAndDisable(this);"
+                            href=" {% url 'django-eveonline-service-manager-service-request' service.pk %}">Request</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<div class="box box-success box-solid">
+    <div class="box-header">
+        <h3>
+            My Services
+        </h3>
+    </div>
+    <div class="box-body">
+        <table class="datatable table table-bordered table-hover">
+            <thead>
+                <th class="col-lg-4 col-md-4 col-xs-4" scope="col">Status</th>
+                <th class="col-lg-4 col-md-4 col-xs-4" scope="col">Expires</th>
+                <th class="col-lg-4 col-md-4 col-xs-4" scope="col">Service</th>
+            </thead>
+            <tbody>
+                {% for service in services %}
+                <tr>
+                    <td>
+                        {% if service.expires and service.is_expired %}
+                        <span class="label label-danger">Expired</span>
+                        {% elif service.is_pending_payment %}
+                        <span class="label label-warning">Awaiting Payment</span>
+                        {% elif not service.expires %}
+                        <span class="label label-info">Pending</span>
+                        {% else %}
+                        <span class="label label-success">Active</span>
+                        {% endif %}
+                    </td>
+                    <td data-order="{{service.expires}}" class="col-lg-2 col-xs-4">
+                        <div id="{{service.pk}}" class="countdown">
+                            <p class="date" hidden>{{service.expires.isoformat}}</p>
+                            <p class="counter"><i class="fa fa-spinner fa-spin"></i></p>
+                        </div>
+                    </td>
+                    <td>
+                        <p class="pull-left">
+                            {{service.service_template.name}}
+
+                        </p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    setInterval(function () {
+        var countdowns = document.getElementsByClassName('countdown')
+        for (i = 0; i < countdowns.length; i++) {
+            // pull date
+            var elements = countdowns[i].getElementsByTagName('*')
+            var date = new Date(elements[0].innerText)
+            var now = new Date().getTime()
+            var distance = date - now
+            // calculate times
+            sign = Math.sign(distance)
+            distance = Math.abs(distance)
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            // display result
+            elements[1].innerHTML = (sign < 0 ? "-" : "") + days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+        }
+    }, 1000);
+
+</script>
+<script>
+    $(function () {
+        $('table').DataTable({
+            'paging': false,
+            'lengthChange': false,
+            'searching': false,
+            'ordering': true,
+            'info': false,
+            'autoWidth': false
+        })
+    })
+</script>
+<script>
+    function clickAndDisable(link) {
+        // disable subsequent clicks
+        link.onclick = function (event) {
+            event.preventDefault();
+        }
+    }   
+</script>
+{% endblock %}
