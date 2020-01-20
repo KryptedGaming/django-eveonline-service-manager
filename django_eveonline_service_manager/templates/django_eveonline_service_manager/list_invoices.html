@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load humanize %}
+
+{% block header %}
+Services
+{% endblock %}
+{% block description %}
+Request Services
+{% endblock %}
+
+{% block includes %}
+<link rel="stylesheet"
+    href="{% static 'global/ui/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+{% endblock %}
+{% block content %}
+<div class="box box-warning box-solid">
+    <div class="box-header">
+        <h3>
+            My Invoices
+        </h3>
+    </div>
+    <div class="box-body">
+        <table class="datatable table table-bordered table-hover">
+            <thead>
+                <th class="col-lg-2 col-md-2 col-xs-2" scope="col">Status</th>
+                <th class="col-lg-4 col-md-4 col-xs-4" scope="col">Invoice ID</th>
+                <th class="col-lg-2 col-md-2 col-xs-2" scope="col">Service</th>
+                <th class="col-lg-4 col-md-4 col-xs-4" scope="col">Action</th>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                <tr>
+                    <td>
+                        {% if invoice.paid %}
+                        <span class="label label-success">Paid</span>
+                        {% else %}
+                        <span class="label label-danger">Unpaid</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <p class="pull-left">{{invoice.pk}}</p>
+                    </td>
+                    <td>
+                        {{invoice.service.service_template.name}}_{{invoice.service.pk}}
+                    </td>
+                    <td>
+                        <button
+                        data-toggle="modal" 
+                        data-target="#selectInvoiceOptions_{{invoice.pk}}" 
+                        class="btn btn-info btn-fill btn-block">
+                        View Payment Options
+                        </button>
+                        {% comment %} <a class="btn btn-block btn-warning" onclick="clickAndDisable(this);"
+                            href="#">View Payment Options</a> {% endcomment %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% for invoice in invoices %}
+<div class="modal fade col-md-12" id="selectInvoiceOptions_{{invoice.pk}}" data-backdrop="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Payment Options</h2>
+            </div>
+            <div class="modal-body">
+                <p><b>Invoice ID</b>: {{invoice.pk}}</p> 
+                <h3>Pricing</h3>
+                <p><b>Monthly</b>: {{invoice.service.service_template.monthly_price | floatformat |intcomma }} ISK</p>
+                <p><b>Quarterly</b>: {{invoice.service.service_template.quarterly_price | floatformat |intcomma }} ISK</p>
+                <p><b>Annually</b>: {{invoice.service.service_template.annual_price | floatformat |intcomma }} ISK</p>
+
+                <h3>Instructions</h3>
+                <ol>
+                    <li>Open an ISK transfer to <b>Krypted Treasury</b> (the corporation)</li>
+                    <li>Input your desired ISK (monthly, quarterly, or annually)</li>
+                    <li>For the description, put the <b>Invoice ID</b>.</li>
+                    <li>Invoices are manually verified for now, <b>ping BearThatCares</b> once you've paid.</li>
+                </ol>
+                {% comment %} <textarea id="minimum_skills_{{fitting.pk}}_textarea" style="width:100%" onclick="this.select()" class="col-md-12" rows="15" readonly="readonly">
+                    &#13;&#10;
+                </textarea> {% endcomment %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(function () {
+        $('table').DataTable({
+            'paging': false,
+            'lengthChange': false,
+            'searching': false,
+            'ordering': true,
+            'info': false,
+            'autoWidth': false,
+            "order": [[ 0, "desc" ]],
+        })
+    })
+</script>
+<script>
+    function clickAndDisable(link) {
+        // disable subsequent clicks
+        link.onclick = function (event) {
+            event.preventDefault();
+        }
+    }   
+</script>
+{% endblock %}

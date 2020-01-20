@@ -21,7 +21,7 @@ def request_service(request, service_template_id):
 
 def list_invoices(request):
     context = {}
-    context['invoices'] = EveInvoice.objects.filter(service__user=request.user)
+    context['invoices'] = EveInvoice.objects.filter(service__user=request.user).order_by('-paid')
     return render(request, 'django_eveonline_service_manager/list_invoices.html', context=context)
 
 

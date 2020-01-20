@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
+{% load humanize %}
 
 {% block header %}
 Services
@@ -23,6 +24,7 @@ Request Services
         <table class="datatable table table-bordered table-hover">
             <thead>
                 <th class="col-lg-4 col-md-4 col-xs-4" scope="col">Service</th>
+                <th class="col-lg-4 col-md-4 col-xs-4" scope="col">Monthly Price</th>
                 <th class="col-lg-4 col-md-4 col-xs-4" scope="col">Action</th>
             </thead>
             <tbody>
@@ -31,6 +33,9 @@ Request Services
 
                     <td>
                         <p class="pull-left">{{service.name}}</p>
+                    </td>
+                    <td>
+                        {{service.monthly_price | floatformat |intcomma }} ISK
                     </td>
                     <td>
                         <a class="btn btn-block btn-warning" onclick="clickAndDisable(this);"
@@ -80,7 +85,7 @@ Request Services
                     </td>
                     <td>
                         <p class="pull-left">
-                            {{service.service_template.name}}
+                            {{service.service_template.name}}_{{service.pk}}
 
                         </p>
                     </td>

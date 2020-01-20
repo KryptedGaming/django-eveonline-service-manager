@@ -15,8 +15,9 @@ class EvePayment(models.Model):
 
 
 class EveInvoice(models.Model):
-    id = models.UUIDField(default=uuid.uuid4(), unique=True, primary_key=True)
+    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True)
     service = models.ForeignKey("EveService", on_delete=models.CASCADE)
+    paid = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.id)
@@ -67,9 +68,10 @@ class EveService(models.Model):
     expires = models.DateTimeField(null=True, blank=True)
     service_template = models.ForeignKey(
         "EveServiceTemplate", on_delete=models.CASCADE)
+    notes = models.TextField()
 
     def __str__(self):
-        return "<%s:%s>" % (self.service_template.name, self.user.username)
+        return "<%s_%s:%s>" % (self.service_template.name, self.pk, self.user.username)
 
     def is_expired(self):
         return self.expires <= datetime.utcnow().replace(tzinfo=pytz.UTC)
