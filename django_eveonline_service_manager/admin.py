@@ -15,6 +15,9 @@ class ServiceAdmin(admin.ModelAdmin):
     list_display = ('user', 'expires', 'paid')
 
     def paid(self, obj):
+        if not obj.expires:
+            return False 
+            
         expires_in = obj.expires - timezone.now()
         days = expires_in.days 
         if days < 5:
